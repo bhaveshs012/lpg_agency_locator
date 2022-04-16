@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "918266815302",
+    "project_id": "lpg-agency-locator-5f4e8",
+    "storage_bucket": "lpg-agency-locator-5f4e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918266815302:android:1061bd41d1a33ea1ec3b47",
+        "android_client_info": {
+          "package_name": "com.example.lpg_agency_locator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918266815302-7niqd6u45e29857o94dl68qs899uvbrq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv2ybOJkDZ6hBMz9j5IxIvfXBT-kZfiBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "918266815302-7niqd6u45e29857o94dl68qs899uvbrq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

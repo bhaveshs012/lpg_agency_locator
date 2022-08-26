@@ -79,10 +79,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       UserLocation.long = _locData.longitude!;
     });
     getLocation();
-    // Timer(const Duration(milliseconds: 10000), () {
-    //   Navigator.pushReplacement(
-    //       context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-    // });
   }
 
   @override
@@ -92,6 +88,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     locationService();
   }
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,199 +98,215 @@ class _SignUpScreenState extends State<SignUpScreen> {
           padding: padding,
           child: Center(
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Sign Up",
-                    style: title1Style,
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  //* name text field
-                  TextFormField(
-                    style: subtitle1Style.copyWith(fontSize: 18),
-                    decoration: InputDecoration(
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Themes.kPrimaryColor),
-                      ),
-                      hintText: "Enter your Name",
-                      hintStyle: subtitle2Style.copyWith(color: Colors.black45),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Sign Up",
+                      style: title1Style,
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _name = value.trim();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  //* email text field
-                  TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    style: subtitle1Style.copyWith(fontSize: 18),
-                    decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Themes.kPrimaryColor),
-                      ),
-                      hintText: "Enter your Email",
-                      hintStyle: subtitle2Style.copyWith(color: Colors.black45),
+                    SizedBox(
+                      height: 5.h,
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        _email = value.trim();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  //* password text field
-                  TextFormField(
-                    style: subtitle1Style.copyWith(fontSize: 18),
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Themes.kPrimaryColor),
-                      ),
-                      hintText: "Enter your Password",
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                          // print("Password Visibility: $_passwordVisible");
-                        },
-                        icon: Icon(
-                          _passwordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Themes.kPrimaryColor,
-                        ),
-                      ),
-                      hintStyle: subtitle2Style.copyWith(color: Colors.black45),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _password = value.trim();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  //* Phone Number text field
-                  TextFormField(
-                    style: subtitle1Style.copyWith(fontSize: 18),
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      prefix: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: Text('+91',
-                            style:
-                                subtitle1Style.copyWith(color: Colors.black)),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Themes.kPrimaryColor),
-                      ),
-                      hintText: "Enter your Phone Number",
-                      hintStyle: subtitle2Style.copyWith(color: Colors.black45),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _phoneNumber = value.trim();
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  //* Address text Field
-                  TextFormField(
-                    controller: _addressController,
-                    style: subtitle1Style.copyWith(fontSize: 18),
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            locationService();
-                            _addressController.text =
-                                "$name, $city, $subArea, $area, $country, $postalCode";
-                            print(_addressController.text);
-                          });
-                        },
-                        icon: Icon(
-                          Icons.location_searching_rounded,
-                          color: Themes.kPrimaryColor,
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Themes.kPrimaryColor),
-                      ),
-                      hintText: "Enter your Address",
-                      hintStyle: subtitle2Style.copyWith(color: Colors.black45),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  //* email Signup button
-                  Center(
-                    child: StyledButton(
-                      title: "Sign Up",
-                      onTap: () async {
-                        try {
-                          UserCredential userCredential = await FirebaseAuth
-                              .instance
-                              .createUserWithEmailAndPassword(
-                                  email: _email, password: _password);
-                          User? updateUser = FirebaseAuth.instance.currentUser;
-                          FirebaseAuth.instance.currentUser!
-                              .updateDisplayName(_name);
-                          FirebaseAuth.instance.currentUser!
-                              .updatePhotoURL("NAN");
-                          var ref = FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(userCredential.user!.uid);
-                          ref.get().then((value) {
-                            if (!value.exists) {
-                              ref.set({
-                                "name": _name,
-                                "email": userCredential.user!.email,
-                                "photoUrl": "NAN",
-                                'id': userCredential.user!.uid,
-                                'phoneNumber': _phoneNumber,
-                                'address': _addressController.text,
-                              });
-                            }
-                          });
-                          Get.to(() => const LandingPage());
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'weak-password') {
-                            Get.snackbar(
-                                "Weak Password", "Use a better password");
-                          } else if (e.code == 'email-already-in-use') {
-                            Get.snackbar("Account already exists",
-                                'The account already exists for that email.');
-                          }
-                        } catch (e) {
-                          print(e);
+                    //* name text field
+                    TextFormField(
+                      validator: ((value) {
+                        if (value!.trim().isEmpty || value == null) {
+                          return 'Please enter your name';
                         }
+                        return null;
+                      }),
+                      style: subtitle1Style.copyWith(fontSize: 18),
+                      decoration: InputDecoration(
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Themes.kPrimaryColor),
+                        ),
+                        hintText: "Enter your Name",
+                        hintStyle:
+                            subtitle2Style.copyWith(color: Colors.black45),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _name = value.trim();
+                        });
                       },
                     ),
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Text(
-                    "By signing up, you agree to our\nterms and conditions\nand our privacy policy",
-                    style: subtitle2Style.copyWith(fontSize: 12),
-                  )
-                ],
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    //* email text field
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      style: subtitle1Style.copyWith(fontSize: 18),
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Themes.kPrimaryColor),
+                        ),
+                        hintText: "Enter your Email",
+                        hintStyle:
+                            subtitle2Style.copyWith(color: Colors.black45),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _email = value.trim();
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    //* password text field
+                    TextFormField(
+                      style: subtitle1Style.copyWith(fontSize: 18),
+                      obscureText: !_passwordVisible,
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Themes.kPrimaryColor),
+                        ),
+                        hintText: "Enter your Password",
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                            // print("Password Visibility: $_passwordVisible");
+                          },
+                          icon: Icon(
+                            _passwordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Themes.kPrimaryColor,
+                          ),
+                        ),
+                        hintStyle:
+                            subtitle2Style.copyWith(color: Colors.black45),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _password = value.trim();
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    //* Phone Number text field
+                    TextFormField(
+                      style: subtitle1Style.copyWith(fontSize: 18),
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        prefix: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Text('+91',
+                              style:
+                                  subtitle1Style.copyWith(color: Colors.black)),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Themes.kPrimaryColor),
+                        ),
+                        hintText: "Enter your Phone Number",
+                        hintStyle:
+                            subtitle2Style.copyWith(color: Colors.black45),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _phoneNumber = value.trim();
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    //* Address text Field
+                    TextFormField(
+                      controller: _addressController,
+                      style: subtitle1Style.copyWith(fontSize: 18),
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              locationService();
+                              _addressController.text =
+                                  "$name, $city, $subArea, $area, $country, $postalCode";
+                              print(_addressController.text);
+                            });
+                          },
+                          icon: Icon(
+                            Icons.location_searching_rounded,
+                            color: Themes.kPrimaryColor,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Themes.kPrimaryColor),
+                        ),
+                        hintText: "Enter your Address",
+                        hintStyle:
+                            subtitle2Style.copyWith(color: Colors.black45),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    //* email Signup button
+                    Center(
+                      child: StyledButton(
+                        title: "Sign Up",
+                        onTap: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              UserCredential userCredential = await FirebaseAuth
+                                  .instance
+                                  .createUserWithEmailAndPassword(
+                                      email: _email, password: _password);
+                              User? updateUser =
+                                  await FirebaseAuth.instance.currentUser;
+                              updateUser!.updateDisplayName(_name);
+                              updateUser.updatePhotoURL("NAN");
+                              await updateUser.reload();
+                              var ref = FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(userCredential.user!.uid);
+                              ref.get().then((value) {
+                                if (!value.exists) {
+                                  ref.set({
+                                    "name": _name,
+                                    "email": userCredential.user!.email,
+                                    "imageUrl": "NAN",
+                                    'id': userCredential.user!.uid,
+                                    'phoneNumber': _phoneNumber,
+                                    'address': _addressController.text,
+                                  });
+                                }
+                              });
+                              Get.to(() => const LandingPage());
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == 'weak-password') {
+                                Get.snackbar(
+                                    "Weak Password", "Use a better password");
+                              } else if (e.code == 'email-already-in-use') {
+                                Get.snackbar("Account already exists",
+                                    'The account already exists for that email.');
+                              }
+                            } catch (e) {
+                              print(e);
+                            }
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Text(
+                      "By signing up, you agree to our\nterms and conditions\nand our privacy policy",
+                      style: subtitle2Style.copyWith(fontSize: 12),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

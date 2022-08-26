@@ -19,6 +19,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    locationService();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Stream<List<DocumentSnapshot>> stream = Geoflutterfire()
         .collection(
@@ -26,16 +33,15 @@ class _HomeScreenState extends State<HomeScreen> {
         .within(
             center: Geoflutterfire().point(
                 latitude: UserLocation.lat, longitude: UserLocation.long),
-            radius: 10,
+            radius: 20,
             field: 'position',
             strictMode: true);
 
-    stream.listen((List<DocumentSnapshot> documentList) {
-      
-    });
+    stream.listen((List<DocumentSnapshot> documentList) {});
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.lightGreen,
         body: Padding(
           padding: padding,
           child: Column(
@@ -66,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       agenciesList.add(a);
                       a['id'] = document.id;
                     }).toList();
-                    
+
                     return Expanded(
                       child: ListView.builder(
                         itemCount: snapshot.data!.length,
@@ -81,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 position: agenciesList[index]['position']
                                     ['geopoint'],
                                 address: agenciesList[index]['address'],
-                                
                                 pincode: agenciesList[index]['pincode'],
                                 description: agenciesList[index]['description'],
                               ),

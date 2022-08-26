@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:lpg_agency_locator/config/fonts.dart';
 import 'package:lpg_agency_locator/config/theme.dart';
@@ -25,53 +24,6 @@ String _email = '';
 String _password = '';
 
 class _LoginScreenState extends State<LoginScreen> {
-  Future<void> getLocation() async {
-    List<Placemark> placemark =
-        await placemarkFromCoordinates(UserLocation.lat, UserLocation.long);
-    setState(() {
-      country = placemark[0].country!;
-      name = placemark[0].subLocality!;
-      city = placemark[0].locality!;
-      subArea = placemark[0].subAdministrativeArea!;
-      area = placemark[0].administrativeArea!;
-      postalCode = placemark[0].postalCode!;
-    });
-    print(placemark[0].subLocality);
-    print(placemark[0].subAdministrativeArea);
-  }
-
-  Future<void> locationService() async {
-    lt.Location location = lt.Location();
-
-    bool _serviceEnabled;
-    lt.PermissionStatus _permissionLocation;
-    lt.LocationData _locData;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionLocation = await location.hasPermission();
-    if (_permissionLocation == lt.PermissionStatus.denied) {
-      _permissionLocation = await location.requestPermission();
-      if (_permissionLocation != lt.PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _locData = await location.getLocation();
-
-    setState(() {
-      UserLocation.lat = _locData.latitude!;
-      UserLocation.long = _locData.longitude!;
-    });
-    getLocation();
-  }
-
   @override
   void initState() {
     // TODO: implement initState
